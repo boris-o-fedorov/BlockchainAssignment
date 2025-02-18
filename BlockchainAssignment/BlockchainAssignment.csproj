@@ -52,6 +52,8 @@
     <Compile Include="BlockchainApp.Designer.cs">
       <DependentUpon>BlockchainApp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Blockchain.cs" />
+    <Compile Include="Block.cs" />
     <Compile Include="HashCode\HashTools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

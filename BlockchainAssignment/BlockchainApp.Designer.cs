@@ -38,7 +38,7 @@
             this.richTextBox1.BackColor = System.Drawing.SystemColors.InfoText;
             this.richTextBox1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.richTextBox1.Location = new System.Drawing.Point(16, 15);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(875, 386);
             this.richTextBox1.TabIndex = 0;
@@ -46,17 +46,17 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(91, 432);
+            this.button1.Location = new System.Drawing.Point(89, 432);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(105, 31);
             this.button1.TabIndex = 1;
-            this.button1.Text = "Print";
+            this.button1.Text = "Display block";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(226, 432);
+            this.textBox1.Location = new System.Drawing.Point(226, 436);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 22);
             this.textBox1.TabIndex = 2;
@@ -71,7 +71,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.richTextBox1);
             this.ForeColor = System.Drawing.Color.Black;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "BlockchainApp";
             this.Text = "Blockchain App";
             this.Load += new System.EventHandler(this.Form1_Load);
