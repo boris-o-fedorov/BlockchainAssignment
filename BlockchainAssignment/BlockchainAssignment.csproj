@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Blockchain.cs" />
     <Compile Include="Block.cs" />
+    <Compile Include="Transaction.cs" />
     <Compile Include="HashCode\HashTools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

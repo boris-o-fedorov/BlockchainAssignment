@@ -10,6 +10,7 @@ namespace BlockchainAssignment
     class Blockchain
     {
         List<Block> Blocks = new List<Block>();
+        public List<Transaction> transactionPool = new List<Transaction>();	// List of pending transactions to be mined 
 
         public Blockchain()
         {

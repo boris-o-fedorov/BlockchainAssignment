@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,21 +31,48 @@ namespace BlockchainAssignment
         {
             richTextBox1.Text = text;
         }
+       
 
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-
-        
-        private void button1_Click(object sender, EventArgs e)
+        private void PrintBlock_Click(object sender, EventArgs e)
         {
             // Display Block string
-            if (Int32.TryParse(textBox1.Text, out int index))
+            if (Int32.TryParse(blockNo.Text, out int index))
                 UpdateText(blockchain.GetBlockString(index));
             else
                 UpdateText("Invalid Block number.");
         }
 
+        private void GenWallet_Click(object sender, EventArgs e)
+        {
+            Wallet.Wallet myNewWallet = new Wallet.Wallet(out string privKey);
+
+            publicKey.Text = myNewWallet.publicID;
+
+            privateKey.Text = privKey;
+        }
+
+        private void ValKeys_Click(object sender, EventArgs e)
+        {
+            if (Wallet.Wallet.ValidatePrivateKey(privateKey.Text, publicKey.Text))
+            {
+                UpdateText("Keys are valid");
+            }
+
+            else
+             {
+                UpdateText("Keys are invalid");
+            }
+        }
+
+
+
+        private void CreateTransaction_Click(object sender, EventArgs e)
+        {
+            Transaction transaction = new Transaction(publicKey.Text, reciever.Text, Double.Parse(amount.Text), Double.Parse(fee.Text), privateKey.Text);
+
+            blockchain.transactionPool.Add(transaction);
+
+            UpdateText(transaction.ToString());
+        }
     }
 }
