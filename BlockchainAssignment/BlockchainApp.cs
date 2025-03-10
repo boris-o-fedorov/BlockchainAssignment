@@ -74,5 +74,29 @@ namespace BlockchainAssignment
 
             UpdateText(transaction.ToString());
         }
+
+        private void GenerateNewBlock_Click(object sender, EventArgs e)
+        {
+            // Retrieve pending transactions to be added to the newly generated Block
+            List<Transaction> transactions = blockchain.GetPendingTransactions();
+
+            // Create and append the new block - requires a reference to the previous block, a set of transactions and the miners public address (For the reward to be issued)
+            Block newBlock = new Block(blockchain.GetLastBlock(), transactions, publicKey.Text);
+            blockchain.Blocks.Add(newBlock);
+
+            UpdateText(blockchain.GetBlockString(blockchain.Blocks.Count - 1));
+            //UpdateText(blockchain.ToString());
+        }
+
+        // Reads all blocks
+        private void ReadAll_Click(object sender, EventArgs e)
+        {
+            UpdateText(blockchain.ToString());
+        }
+
+        private void PrintPendingTransactions_Click(object sender, EventArgs e)
+        {
+            UpdateText(String.Join("\n\n", blockchain.transactionPool));
+        }
     }
 }

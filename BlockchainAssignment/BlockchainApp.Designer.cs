@@ -44,6 +44,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.ReciverKey = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -63,7 +66,7 @@
             this.PrintBlock.Name = "PrintBlock";
             this.PrintBlock.Size = new System.Drawing.Size(105, 31);
             this.PrintBlock.TabIndex = 1;
-            this.PrintBlock.Text = "Display block";
+            this.PrintBlock.Text = "Display Block";
             this.PrintBlock.UseVisualStyleBackColor = true;
             this.PrintBlock.Click += new System.EventHandler(this.PrintBlock_Click);
             // 
@@ -71,7 +74,7 @@
             // 
             this.blockNo.Location = new System.Drawing.Point(123, 425);
             this.blockNo.Name = "blockNo";
-            this.blockNo.Size = new System.Drawing.Size(54, 22);
+            this.blockNo.Size = new System.Drawing.Size(33, 22);
             this.blockNo.TabIndex = 2;
             // 
             // button2
@@ -184,12 +187,45 @@
             this.ReciverKey.TabIndex = 15;
             this.ReciverKey.Text = "ReciverKey";
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(12, 470);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(101, 45);
+            this.button4.TabIndex = 16;
+            this.button4.Text = "Generate New Block";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.GenerateNewBlock_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(162, 421);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(81, 31);
+            this.button5.TabIndex = 17;
+            this.button5.Text = "Read All";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.ReadAll_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(119, 470);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(124, 47);
+            this.button6.TabIndex = 18;
+            this.button6.Text = "Read Pending Transactions";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.PrintPendingTransactions_Click);
+            // 
             // BlockchainApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(908, 592);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.ReciverKey);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -233,6 +269,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label ReciverKey;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
     }
 }
 
