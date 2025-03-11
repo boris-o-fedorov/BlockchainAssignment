@@ -47,6 +47,8 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -79,7 +81,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(776, 408);
+            this.button2.Location = new System.Drawing.Point(785, 408);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(101, 56);
             this.button2.TabIndex = 3;
@@ -121,7 +123,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(776, 470);
+            this.button3.Location = new System.Drawing.Point(785, 472);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(101, 27);
             this.button3.TabIndex = 8;
@@ -157,7 +159,7 @@
             // 
             this.reciever.Location = new System.Drawing.Point(356, 561);
             this.reciever.Name = "reciever";
-            this.reciever.Size = new System.Drawing.Size(416, 22);
+            this.reciever.Size = new System.Drawing.Size(414, 22);
             this.reciever.TabIndex = 12;
             // 
             // label3
@@ -217,12 +219,34 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.PrintPendingTransactions_Click);
             // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(653, 472);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(117, 25);
+            this.button7.TabIndex = 19;
+            this.button7.Text = "Check Balance";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.CheckBalance_Click);
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(785, 505);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(106, 63);
+            this.button8.TabIndex = 20;
+            this.button8.Text = "Full Blockchain Validation";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.Validate_Click);
+            // 
             // BlockchainApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(908, 592);
+            this.Controls.Add(this.button8);
+            this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
@@ -272,6 +296,8 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button8;
     }
 }
 

@@ -98,5 +98,60 @@ namespace BlockchainAssignment
         {
             UpdateText(String.Join("\n\n", blockchain.transactionPool));
         }
+
+        // Validate the integrity of the state of the Blockchain
+        private void Validate_Click(object sender, EventArgs e)
+        {
+            // If: Genesis Block - Check only hash as no transactions are currently present
+            if (blockchain.Blocks.Count == 1)
+            {
+                if (!Blockchain.ValidateHash(blockchain.Blocks[0])) // Recompute Hash to check validity
+                {
+                    UpdateText("Blockchain is invalid");
+                }
+
+                else
+                {
+                    UpdateText("Blockchain is valid");
+                }
+
+                return;
+            }
+
+            for (int i = 1; i < blockchain.Blocks.Count - 1; i++)
+
+            {
+
+                if (
+
+                blockchain.Blocks[i].previousHash != blockchain.Blocks[i - 1].blockHash || // Check hash "chain"
+
+                !Blockchain.ValidateHash(blockchain.Blocks[i]) || // Check each blocks hash
+
+                !Blockchain.ValidateMerkleRoot(blockchain.Blocks[i]) // Check transaction integrity using Merkle Root
+
+                )
+
+                {
+
+                    UpdateText("Blockchain is invalid");
+
+                    return;
+
+                }
+
+            }
+
+            UpdateText("Blockchain is valid");
+
+        }
+
+        // Checks balance, adds more information then that provided for in the code provided
+        private void CheckBalance_Click(object sender, EventArgs e)
+        {
+            UpdateText("Address: " + reciever.Text
+                        + "\nBalance: " + blockchain.GetBalance(reciever.Text).ToString() + " Nova Coin\n"
+                        + "\nTransactions:\n" + blockchain.GetIncludedTransactions(reciever.Text));   // Displays the balance and all transactions with reciver key
+        }
     }
 }
