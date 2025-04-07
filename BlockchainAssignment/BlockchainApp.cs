@@ -153,5 +153,55 @@ namespace BlockchainAssignment
                         + "\nBalance: " + blockchain.GetBalance(reciever.Text).ToString() + " Nova Coin\n"
                         + "\nTransactions:\n" + blockchain.GetIncludedTransactions(reciever.Text));   // Displays the balance and all transactions with reciver key
         }
+
+        
+
+        // Generate new block with the five largest fees
+        private void Click_GenLargest(object sender, EventArgs e)
+        {
+            // Retrieve pending transactions to be added to the newly generated Block based on greedy
+            List<Transaction> transactions = blockchain.GetTransactionsSpecifically("fee");
+
+            // Create and append the new block - requires a reference to the previous block, a set of transactions and the miners public address (For the reward to be issued)
+            Block newBlock = new Block(blockchain.GetLastBlock(), transactions, publicKey.Text);
+            blockchain.Blocks.Add(newBlock);
+
+            UpdateText(blockchain.GetBlockString(blockchain.Blocks.Count - 1));
+        }
+
+        // Generate new block with the five oldest transactions
+        private void Click_GenOldest(object sender, EventArgs e)
+        {
+            // Retrieve pending transactions to be added based on their age
+            List<Transaction> transactions = blockchain.GetTransactionsSpecifically("date");
+
+            // Create and append the new block - requires a reference to the previous block, a set of transactions and the miners public address (For the reward to be issued)
+            Block newBlock = new Block(blockchain.GetLastBlock(), transactions, publicKey.Text);
+            blockchain.Blocks.Add(newBlock);
+
+            UpdateText(blockchain.GetBlockString(blockchain.Blocks.Count - 1));
+        }
+
+        private void Cick_GenRandom(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Click_GenPersonal(object sender, EventArgs e)
+        {
+            // Retrieve pending transactions to be added based on if they are in the miner's friend list
+            List<Transaction> transactions = blockchain.GetTransactionsPersonal();
+
+            // Create and append the new block - requires a reference to the previous block, a set of transactions and the miners public address (For the reward to be issued)
+            Block newBlock = new Block(blockchain.GetLastBlock(), transactions, publicKey.Text);
+            blockchain.Blocks.Add(newBlock);
+
+            UpdateText(blockchain.GetBlockString(blockchain.Blocks.Count - 1));
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

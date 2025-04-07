@@ -112,6 +112,116 @@ namespace BlockchainAssignment
             return tl;
         }
 
+
+        // This procedure swaps two transactions with the arguments n1 and n2 been the index in the pending transaction list
+        // of where the card is. The procedure puts the card at n1 into index n2 and the card n2 into the index at n1.
+        void swapTransactions(int n1, int n2)
+        {
+            Transaction tempN2 = transactionPool[n2]; // creates a temporary storage for n2 so we can put into n1 when it gets overwritten by n1's value
+            transactionPool[n2] = transactionPool[n1];  // stores the value of n1 into n2
+            transactionPool[n1] = tempN2;       // stores the value of n2 into n1
+        }
+
+
+        // This procedure sorts the pending transaction list through bubble sort
+        // It puts the largest or oldest at the beginning of the list
+        void bubbleSort(string sortBy)
+        {
+
+            // this will go through the pending transactions times to make sure each item is in the correct position
+            for (int i = 0; i < transactionPool.Count - 1; i++)
+            {
+                // goes through the transaction list comparing each card to the one next to it
+                // and swapping it if there is a bigger one to the left of a smaller one
+                for (int j = 0; j < transactionPool.Count - 1; j++)
+                {
+
+                    // for fees get the largest ones at the front and for date get the earliest ones at the front
+                    if (sortBy == "fee")
+                    {
+                        // if it is one that means that the first one is smaller and they need to be swapped
+                        if (transactionPool[j].fee < transactionPool[j + 1].fee)
+                        {
+                            swapTransactions(j, j + 1);
+                        }
+                    }
+
+                    if (sortBy == "date")
+                    {
+                        // if it is one that means that the first one is smaller and they need to be swapped
+                        if (transactionPool[j].timestamp > transactionPool[j + 1].timestamp)
+                        {
+                            swapTransactions(j, j + 1);
+                        }
+                    }
+
+                }
+            }
+
+            
+
+        }
+
+
+        // Method that returns the five largest or five oldest transactions from the transacrtion pool
+        public List<Transaction> GetTransactionsSpecifically(string sortby)
+        {
+
+            List<Transaction> largestTransactions = new List<Transaction>();       // Value to store the five largest transactions
+
+            // If there is less then five then it will automatically have the five biggest ones 
+            if (transactionPool.Count < 5)
+            {
+                largestTransactions = transactionPool;
+                transactionPool.Clear();        // Clear transaction pool
+                return transactionPool;
+            }
+
+            // Sort the list so the largest fees or oldest ones are at the beginning of the list
+            if (sortby == "fee") bubbleSort("fee");
+            else if (sortby == "date") bubbleSort("date");
+
+            Console.WriteLine($"Checking transactionpool\n {String.Join("\n\n", transactionPool)}");
+
+            // After ordering get the five largest or oldest
+            for (int i=0; i<4; i++)
+            {
+                // Add the first one and then remove it from transacction pool
+                largestTransactions.Add(transactionPool[0]);
+                transactionPool.Remove(transactionPool[0]);
+            }
+
+            return largestTransactions;       // Return the largest transactions
+        }
+
+        // Method that returns the transactions from the miner's friend list
+        public List<Transaction> GetTransactionsPersonal()
+        {
+            List<Transaction> personalTransactions = new List<Transaction>();       // Value to store the transactions from the friends list
+
+            List<String> friendList = new List<String> { "PyQMaqziE/Cv8miNIlFCpa/uJi0A69feLEp69ze5iQfB86jG90sWipStIPvtIE/iC1Rgw3bhdSw1nt5RKZKPrQ==",
+                                                        "MDb4kTTRVR6tWZBC18bR9lzC/SReTOm0ZsNoUGus6TTWM/fc8thX6Pd+odAlFtU4H07KK3E8jYM0Gb6hcSIDmA==" ,
+                                                        "MthpPmpJICFtuB4L9s9EpzlezzEsaA9DePmDXjzAuscHZT6SV8ZED9ILPQp3GKYhkZc8YLOeOsum3y+bdwweqA==",
+                                                        "ANpZLIEBOKbK1Ho+MwPLngjPH8c11oX2ls4oAKXiQXd7HbdCnjCCaOYbQBr6XRTYJnPKuCWTMRa1P+AQ3lPADg==",
+                                                        "2uvdAVmkITdZTL24ImNtlOiI92KhR9g8TnMIq1kcwlGmxPamN2bDxFhvNeIayFey3545ZVsMR7WYe1DNitLBAA=="};
+
+            // Check each transaction if it is in the miner's friend list
+            foreach (Transaction transaction in transactionPool.ToList())
+            {
+                foreach(String friendHash in friendList)
+                {
+                    if (transaction.senderAddress == friendHash || transaction.recipientAddress == friendHash)
+                    {
+                        personalTransactions.Add(transaction);
+                        transactionPool.Remove(transaction);    // Remove it from the transaction pool
+                        break;
+                    }
+                }
+            }
+
+            return personalTransactions;
+        }
+
         public override string ToString() // Output all blocks of the blockchain as a string
 
         {

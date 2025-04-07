@@ -49,6 +49,11 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button12 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -133,7 +138,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(6, 534);
+            this.button1.Location = new System.Drawing.Point(12, 534);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(111, 46);
             this.button1.TabIndex = 9;
@@ -143,14 +148,14 @@
             // 
             // amount
             // 
-            this.amount.Location = new System.Drawing.Point(203, 534);
+            this.amount.Location = new System.Drawing.Point(187, 528);
             this.amount.Name = "amount";
             this.amount.Size = new System.Drawing.Size(51, 22);
             this.amount.TabIndex = 10;
             // 
             // fee
             // 
-            this.fee.Location = new System.Drawing.Point(203, 561);
+            this.fee.Location = new System.Drawing.Point(187, 558);
             this.fee.Name = "fee";
             this.fee.Size = new System.Drawing.Size(51, 22);
             this.fee.TabIndex = 11;
@@ -165,7 +170,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(145, 534);
+            this.label3.Location = new System.Drawing.Point(129, 528);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(52, 16);
             this.label3.TabIndex = 13;
@@ -174,7 +179,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(146, 564);
+            this.label4.Location = new System.Drawing.Point(138, 561);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 16);
             this.label4.TabIndex = 14;
@@ -191,7 +196,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(12, 470);
+            this.button4.Location = new System.Drawing.Point(146, 469);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(101, 45);
             this.button4.TabIndex = 16;
@@ -211,7 +216,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(119, 470);
+            this.button6.Location = new System.Drawing.Point(16, 469);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(124, 47);
             this.button6.TabIndex = 18;
@@ -239,17 +244,61 @@
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.Validate_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button12);
+            this.groupBox1.Controls.Add(this.button11);
+            this.groupBox1.Controls.Add(this.button9);
+            this.groupBox1.Location = new System.Drawing.Point(253, 468);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(287, 87);
+            this.groupBox1.TabIndex = 22;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Generate Blocks with Criteria";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(7, 52);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(123, 30);
+            this.button12.TabIndex = 22;
+            this.button12.Text = "Use Your friends";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.Click_GenPersonal);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(154, 17);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(123, 30);
+            this.button11.TabIndex = 21;
+            this.button11.Text = "Use Oldest";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.Click_GenOldest);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(7, 17);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(123, 30);
+            this.button9.TabIndex = 19;
+            this.button9.Text = "Use Largest";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.Click_GenLargest);
+            // 
             // BlockchainApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(908, 592);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.button7);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.ReciverKey);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -270,6 +319,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "BlockchainApp";
             this.Text = "Blockchain App";
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -298,6 +348,10 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button9;
     }
 }
 

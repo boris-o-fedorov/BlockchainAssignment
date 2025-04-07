@@ -14,7 +14,7 @@ namespace BlockchainAssignment
     {
 
         /* Transaction Variables */
-        DateTime timestamp; 			        // Time of creation 
+        public DateTime timestamp; 			    // Time of creation 
         public string senderAddress;            // Sender's address
         public string recipientAddress; 		// Participants public key addresses 
         public double amount;                   // The amount of currency being sent to the receiver
