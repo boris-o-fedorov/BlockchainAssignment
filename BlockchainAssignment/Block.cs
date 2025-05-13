@@ -24,7 +24,7 @@ namespace BlockchainAssignment
         public string blockHash;        // The hash of the current block
         public string previousHash;     //  The hash of the previous block
 
-        private int difficulty = 4;     // An arbitrary number of 0's to proceed a hash value
+        private int difficulty = 3;     // An arbitrary number of 0's to proceed a hash value
         public string minerAddress;     // Public Key (Wallet Address) of the Miner
         public string merkleRoot;  	    // The merkle root of all transactions in the block
 
@@ -38,7 +38,7 @@ namespace BlockchainAssignment
         
         private static readonly object lockObject = new object();  // Lock object for thread safety in parallel mining
 
-        public int maxThread = 0;  // The max thread reached for parallel mining
+        public int maxThread = 1024;  // The max thread reached for parallel mining
 
         private Stopwatch stopwatch;        // Stopwatch for recording time taken to generate block
 
@@ -70,7 +70,7 @@ namespace BlockchainAssignment
             this.timestamp = DateTime.Now;
             this.index = 0;
             this.previousHash = "N/A";
-            this.blockHash = GPUMine();
+            this.blockHash = Mine();
 
             this.transactionList = new List<Transaction>();
         }
@@ -80,8 +80,7 @@ namespace BlockchainAssignment
         {
             this.timestamp = DateTime.Now;
             this.index = lastBlock.index + 1;
-            this.previousHash = lastBlock.blockHash;
-            this.blockHash = GPUMine();
+            this.previousHash = lastBlock.blockHash;           
 
             this.minerAddress = minerAddress; // The wallet to be credited the reward for the mining effort
             this.reward = 1.0; // Assign a simple fixed value reward
@@ -90,6 +89,8 @@ namespace BlockchainAssignment
             this.transactionList = new List<Transaction>(transactions); // Assign provided transactions to the block
 
             this.merkleRoot = MerkleRoot(transactionList); 		// Calculate the merkle root of the blocks transactions
+
+            this.blockHash = GPUMine();
 
         }
    
@@ -145,7 +146,7 @@ namespace BlockchainAssignment
             stopwatch = Stopwatch.StartNew(); // Start timing
 
             // Use Multi-thread processing
-            Parallel.For(0, Environment.ProcessorCount, (threadIndex, state) =>
+            Parallel.For(0, 1024, (threadIndex, state) =>
             {
                 if (maxThread < threadIndex) maxThread = threadIndex;   // Update threadIndex if needed
 
@@ -194,7 +195,14 @@ namespace BlockchainAssignment
             return hash; // Return the first valid hash found
         }
 
-        
+        // Padding helper
+        byte[] PadToFixedSize(byte[] input, int size)
+        {
+            byte[] padded = new byte[size];
+            Array.Copy(input, padded, Math.Min(input.Length, size));
+            return padded;
+        }
+
         // GPU mining with parallel processing
         public string GPUMine()
         {
@@ -208,22 +216,48 @@ namespace BlockchainAssignment
             using (var context = ILGPU.Context.CreateDefault())
             using (var accelerator = context.GetPreferredDevice(preferCPU: false).CreateAccelerator(context))
             {
-                // Prepare data and target prefix
-                byte[] data = new byte[1000]; // data bytes for GPU
-                byte[] targetPrefix = new byte[difficulty]; // Difficulty prefix
+                // Define max lengths
+                const int MaxIndexLength = 20;   
+                const int MaxTimestampLength = 64;
+                const int MaxPrevHashLength = 64;  
+                const int MaxMerkleRootLength = 64;
+
+
+
+
+                // Prepare data for hashing for the gpu
+                byte[] indexBytes = Encoding.UTF8.GetBytes(index.ToString());
+                byte[] timestampBytes = Encoding.UTF8.GetBytes(timestamp.ToString());
+                byte[] prevHashBytes = Encoding.UTF8.GetBytes("00000000abcdef1234567890abcdef1234567890abcdef1234567890abcdef12");
+                byte[] merkleRootBytes = Encoding.UTF8.GetBytes("abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+
+                // Pad to match GPU buffer sizes
+                indexBytes = PadToFixedSize(indexBytes, MaxIndexLength);
+                timestampBytes = PadToFixedSize(timestampBytes, MaxTimestampLength);
+                prevHashBytes = PadToFixedSize(prevHashBytes, MaxPrevHashLength);
+                merkleRootBytes = PadToFixedSize(merkleRootBytes, MaxMerkleRootLength);
 
                 // Allocate memory buffers on the GPU
                 int threadNumber = 1024; // Number of threads
-                using (var outputBuffer = accelerator.Allocate1D<byte>(threadNumber))
-                using (var kBuffer = accelerator.Allocate1D<uint>(K))
+                using (var outputBuffer = accelerator.Allocate1D<byte>(threadNumber))       // output buffer for storing if it is a valid hash
+                using (var kBuffer = accelerator.Allocate1D<uint>(K))                       // buffer for hash
+                using (var indexBuffer = accelerator.Allocate1D<byte>(MaxIndexLength)) 
+                using (var timestampBuffer = accelerator.Allocate1D<byte>(MaxTimestampLength))
+                using (var prevHashBuffer = accelerator.Allocate1D<byte>(MaxPrevHashLength))
+                using (var merkleBuffer = accelerator.Allocate1D<byte>(MaxMerkleRootLength))
                 {
+                    // Load data from the cpu
                     kBuffer.CopyFromCPU(K);
+                    indexBuffer.CopyFromCPU(indexBytes);
+                    timestampBuffer.CopyFromCPU(timestampBytes);
+                    prevHashBuffer.CopyFromCPU(prevHashBytes);
+                    merkleBuffer.CopyFromCPU(merkleRootBytes);
 
                     /* Load and execute the kernel 
                      * As the threadNumber is being passed as an Index1D
                      * This means it will excecute all the values from 0 to 1023 instantaniously creating a seperate enonce for each nonce.
                      */
-                    var kernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, ArrayView<byte>, ArrayView<uint>, long, int>(Sha256GpuKernel.Sha256Kernel);
+                    var kernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, ArrayView<byte>, ArrayView<uint>,long, int,ArrayView<byte>, ArrayView<byte>, ArrayView<byte>, ArrayView<byte>>(Sha256GpuKernel.Sha256Kernel);
 
 
                     /* Process results to find the valid hash.
@@ -235,7 +269,7 @@ namespace BlockchainAssignment
                      */
                     while (hash == null)
                     {
-                        kernel((int)threadNumber, outputBuffer.View, kBuffer.View, nonce, difficulty); // starting the parallel processing for the GPU
+                        kernel((int)threadNumber, outputBuffer.View, kBuffer.View, nonce, difficulty, indexBuffer.View, timestampBuffer.View, prevHashBuffer.View, merkleBuffer.View); // starting the parallel processing for the GPU
                         accelerator.Synchronize(); // Syncronise the GPU to ensure they finnish at the same time
 
                         var results = outputBuffer.GetAsArray1D(); // Gets the output buffer to use ont he GPU to store as results
