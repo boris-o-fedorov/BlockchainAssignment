@@ -19,14 +19,14 @@ namespace BlockchainAssignment
 {
     class Block
     {
-        private DateTime timestamp;     // The time the block is made at
-        private int index;              // The position of the block in the blockchain
-        public string blockHash;        // The hash of the current block
-        public string previousHash;     //  The hash of the previous block
+        private DateTime timestamp;             // The time the block is made at
+        private int index;                      // The position of the block in the blockchain
+        public string blockHash;                // The hash of the current block
+        public string previousHash;             //  The hash of the previous block
 
-        private int difficulty = 3;     // An arbitrary number of 0's to proceed a hash value
-        public string minerAddress;     // Public Key (Wallet Address) of the Miner
-        public string merkleRoot;  	    // The merkle root of all transactions in the block
+        private static int difficulty = 4;      // An arbitrary number of 0's to proceed a hash value
+        public string minerAddress;             // Public Key (Wallet Address) of the Miner
+        public string merkleRoot;  	            // The merkle root of all transactions in the block
 
         public List<Transaction> transactionList; // List of transactions in this block
 
@@ -38,10 +38,13 @@ namespace BlockchainAssignment
         
         private static readonly object lockObject = new object();  // Lock object for thread safety in parallel mining
 
-        public int maxThread = 1024;  // The max thread reached for parallel mining
+        private static int threadNumber = 512;   // The thread number for parallel mining
 
-        private Stopwatch stopwatch;        // Stopwatch for recording time taken to generate block
+        public Stopwatch stopwatch;        // Stopwatch for recording time taken to generate block
 
+        private static int whichMine = 0;
+
+        // Buffer for hash
         private static readonly uint[] K = new uint[]
     {
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
@@ -90,8 +93,31 @@ namespace BlockchainAssignment
 
             this.merkleRoot = MerkleRoot(transactionList); 		// Calculate the merkle root of the blocks transactions
 
-            this.blockHash = MineParallel();
+            this.blockHash = MineHash();
 
+        }
+
+
+        // Does the mineing depending on which way of mining is currently being done
+        public String MineHash()
+        {
+            String hash = "";    // The hash to return
+
+            // Switch depending on which version of mining is currently being done
+            switch(whichMine)
+            {
+                case 0:
+                    hash = Mine();
+                    break;
+                case 1:
+                    hash = MineParallel();
+                    break;
+                case 2:
+                    hash = GPUMine();
+                    break;
+            }
+
+            return hash;
         }
    
 
@@ -146,9 +172,9 @@ namespace BlockchainAssignment
             stopwatch = Stopwatch.StartNew(); // Start timing
 
             // Use Multi-thread processing
-            Parallel.For(0, 512, (threadIndex, state) =>
+            Parallel.For(0, threadNumber, (threadIndex, state) =>
             {
-                if (maxThread < threadIndex) maxThread = threadIndex;   // Update threadIndex if needed
+                if (threadNumber < threadIndex) threadNumber = threadIndex;   // Update threadIndex if needed
 
                 long enonce = threadIndex * 1000000; // unique range per thread
 
@@ -180,7 +206,7 @@ namespace BlockchainAssignment
                     // If reached limit then go to the next range and keep searching
                     if (enonce >= maxEnonce)
                     {
-                        threadIndex = maxThread + 1;
+                        threadIndex = threadNumber + 1;
                         enonce = threadIndex * 1000000;
                         maxEnonce = enonce + 1000000;
                     }
@@ -195,7 +221,7 @@ namespace BlockchainAssignment
             return hash; // Return the first valid hash found
         }
 
-        // Padding helper
+        // Add padding to ensure bytes match the required length
         byte[] PadToFixedSize(byte[] input, int size)
         {
             byte[] padded = new byte[size];
@@ -223,8 +249,6 @@ namespace BlockchainAssignment
                 const int MaxMerkleRootLength = 64;
 
 
-
-
                 // Prepare data for hashing for the gpu
                 byte[] indexBytes = Encoding.UTF8.GetBytes(index.ToString());
                 byte[] timestampBytes = Encoding.UTF8.GetBytes(timestamp.ToString());
@@ -238,7 +262,6 @@ namespace BlockchainAssignment
                 merkleRootBytes = PadToFixedSize(merkleRootBytes, MaxMerkleRootLength);
 
                 // Allocate memory buffers on the GPU
-                int threadNumber = 512; // Number of threads
                 using (var outputBuffer = accelerator.Allocate1D<byte>(threadNumber))       // output buffer for storing if it is a valid hash
                 using (var kBuffer = accelerator.Allocate1D<uint>(K))                       // buffer for hash
                 using (var indexBuffer = accelerator.Allocate1D<byte>(MaxIndexLength)) 
@@ -287,7 +310,7 @@ namespace BlockchainAssignment
                                 nonce = foundNonce;     // Set the nonce to the found nonce to recompute the found hash
                                 string newHash = CreateHash();
 
-                                // Doube check the hash is valid in case of any corruption or error on the gou
+                                // Doube check the hash is valid in case of any corruption or error on the gpu
                                 if (newHash.StartsWith(re))
                                 {
                                         // Once found lock it so there is no issue with other threads
@@ -366,6 +389,38 @@ namespace BlockchainAssignment
             return hashes[0];								 // Return the root node 
         }
 
+        // Gets the Difficulty
+        public static int GetDifficulty()
+        {
+            return difficulty;
+        }
+
+
+        // Sets the Difficulty
+        public static void SetDifficulty(int newDifficulty)
+        {
+            difficulty = newDifficulty;
+        }
+
+
+        // Gets the thread number
+        public static int GetThreadNumber()
+        {
+            return threadNumber;
+        }
+
+
+        // Sets the thread number
+        public static void SetThreadNumber(int newThreadNumber)
+        {
+            threadNumber = newThreadNumber;
+        }
+
+        // Sets which mining is done
+        public static void SetWhichMine(int newWhichMine)
+        {
+            whichMine = newWhichMine;
+        }
 
 
         // Function to return string containing block values
