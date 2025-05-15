@@ -241,10 +241,7 @@ namespace BlockchainAssignment
 
                 // Create and append the new block
                 Block newBlock = new Block(blockchain.GetLastBlock(), transactions, publicKey.Text);
-                blockchain.Blocks.Add(newBlock);
-
-                // Display the new block so that the user knows it is working and hasn't crashed
-                
+                blockchain.Blocks.Add(newBlock);                
 
                 // Get the block time
                 TimeSpan mineTime = newBlock.stopwatch.Elapsed;
