@@ -90,7 +90,7 @@ namespace BlockchainAssignment
 
             this.merkleRoot = MerkleRoot(transactionList); 		// Calculate the merkle root of the blocks transactions
 
-            this.blockHash = GPUMine();
+            this.blockHash = MineParallel();
 
         }
    
@@ -146,7 +146,7 @@ namespace BlockchainAssignment
             stopwatch = Stopwatch.StartNew(); // Start timing
 
             // Use Multi-thread processing
-            Parallel.For(0, 1024, (threadIndex, state) =>
+            Parallel.For(0, 512, (threadIndex, state) =>
             {
                 if (maxThread < threadIndex) maxThread = threadIndex;   // Update threadIndex if needed
 
@@ -228,8 +228,8 @@ namespace BlockchainAssignment
                 // Prepare data for hashing for the gpu
                 byte[] indexBytes = Encoding.UTF8.GetBytes(index.ToString());
                 byte[] timestampBytes = Encoding.UTF8.GetBytes(timestamp.ToString());
-                byte[] prevHashBytes = Encoding.UTF8.GetBytes("00000000abcdef1234567890abcdef1234567890abcdef1234567890abcdef12");
-                byte[] merkleRootBytes = Encoding.UTF8.GetBytes("abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+                byte[] prevHashBytes = Encoding.UTF8.GetBytes(previousHash);
+                byte[] merkleRootBytes = Encoding.UTF8.GetBytes(merkleRoot.ToString());
 
                 // Pad to match GPU buffer sizes
                 indexBytes = PadToFixedSize(indexBytes, MaxIndexLength);
@@ -238,7 +238,7 @@ namespace BlockchainAssignment
                 merkleRootBytes = PadToFixedSize(merkleRootBytes, MaxMerkleRootLength);
 
                 // Allocate memory buffers on the GPU
-                int threadNumber = 1024; // Number of threads
+                int threadNumber = 512; // Number of threads
                 using (var outputBuffer = accelerator.Allocate1D<byte>(threadNumber))       // output buffer for storing if it is a valid hash
                 using (var kBuffer = accelerator.Allocate1D<uint>(K))                       // buffer for hash
                 using (var indexBuffer = accelerator.Allocate1D<byte>(MaxIndexLength)) 

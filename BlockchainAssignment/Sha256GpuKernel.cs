@@ -96,17 +96,20 @@ public static class Sha256GpuKernel
         uint g = 0x1f83d9ab;
         uint h = 0x5be0cd19;
 
-
+        // Message schedule array
         uint[] w = new uint[64];
 
+        // Process the message in successive 64-byte chunks
         for (int chunkStart = 0; chunkStart < paddedLen; chunkStart += 64)
         {
+            // Break the chunk into sixteen 32-bit big-endian words
             for (int i = 0; i < 16; i++)
             {
                 int j = chunkStart + i * 4;
                 w[i] = (uint)(padded[j] << 24 | padded[j + 1] << 16 | padded[j + 2] << 8 | padded[j + 3]);
             }
 
+            // Extend the first 16 words into the remaining 48 words
             for (int i = 16; i < 64; i++)
             {
                 uint s0 = RotateRight(w[i - 15], 7) ^ RotateRight(w[i - 15], 18) ^ (w[i - 15] >> 3);
@@ -114,17 +117,20 @@ public static class Sha256GpuKernel
                 w[i] = w[i - 16] + s0 + w[i - 7] + s1;
             }
 
+            // Initialise working variables with current hash value
             uint A = a, B = b, C = c, D = d, E = e, F = f, G = g, H = h;
 
+            // Compression loop loop
             for (int i = 0; i < 64; i++)
             {
-                uint S1 = RotateRight(E, 6) ^ RotateRight(E, 11) ^ RotateRight(E, 25);
-                uint ch = (E & F) ^ (~E & G);
-                uint temp1 = H + S1 + ch + kConstants[i] + w[i];
-                uint S0 = RotateRight(A, 2) ^ RotateRight(A, 13) ^ RotateRight(A, 22);
-                uint maj = (A & B) ^ (A & C) ^ (B & C);
-                uint temp2 = S0 + maj;
+                uint S1 = RotateRight(E, 6) ^ RotateRight(E, 11) ^ RotateRight(E, 25);      // Bitwise operations for diffusion
+                uint ch = (E & F) ^ (~E & G);                                               // If E then F else G
+                uint temp1 = H + S1 + ch + kConstants[i] + w[i];                            // The current round constant and message schedule
+                uint S0 = RotateRight(A, 2) ^ RotateRight(A, 13) ^ RotateRight(A, 22);      // Bitwise operations for diffusion
+                uint maj = (A & B) ^ (A & C) ^ (B & C);                                     // Majority function of A, B, C
+                uint temp2 = S0 + maj;                                                      // Combine S0 and majority
 
+                // Update working variables through rotation pipeline
                 H = G;
                 G = F;
                 F = E;
@@ -135,6 +141,7 @@ public static class Sha256GpuKernel
                 A = temp1 + temp2;
             }
 
+            // Add the compressed chunk to the current hash value
             a += A;
             b += B;
             c += C;
@@ -158,7 +165,7 @@ public static class Sha256GpuKernel
         output[threadId] = (byte)(zeroBits >= difficulty ? 1 : 0);
     }
 
-    // Peforms a rotate ryte
+    // Peforms a rotate right
     private static uint RotateRight(uint x, int n)
     {
         return (x >> n) | (x << (32 - n));
