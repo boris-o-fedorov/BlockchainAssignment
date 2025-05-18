@@ -40,7 +40,6 @@ namespace BlockchainAssignment
         }
 
 
-
         /* Transaction Functions */
         public String CreateHash()						// Hash the transaction attributes using SHA256 
 

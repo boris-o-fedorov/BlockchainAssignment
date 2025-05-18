@@ -187,11 +187,6 @@ namespace BlockchainAssignment
             UpdateText(blockchain.GetBlockString(blockchain.Blocks.Count - 1));
         }
 
-        private void Cick_GenRandom(object sender, EventArgs e)
-        {
-
-        }
-
         private void Click_GenPersonal(object sender, EventArgs e)
         {
             // Retrieve pending transactions to be added based on if they are in the miner's friend list

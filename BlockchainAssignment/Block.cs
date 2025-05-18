@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.Remoting.Contexts;
 using ILGPU;
-using ILGPU.Algorithms;
 using ILGPU.Runtime;
-using static ILGPU.IntrinsicMath;
-using ILGPU.Runtime.OpenCL;
-using System.Threading;
-using ILGPUContext = ILGPU.Context;
+
 
 namespace BlockchainAssignment
 {
@@ -206,7 +200,7 @@ namespace BlockchainAssignment
                     // If reached limit then go to the next range and keep searching
                     if (enonce >= maxEnonce)
                     {
-                        threadIndex = threadNumber + 1;
+                        threadIndex = threadNumber + threadIndex;
                         enonce = threadIndex * 1000000;
                         maxEnonce = enonce + 1000000;
                     }
@@ -325,6 +319,8 @@ namespace BlockchainAssignment
                                 }
                             }
                         }
+
+                        if (hash == null)  nonce = nonce + results.Length;      // If no valid hash found set the nonce to go to the next range
                     }
                 }
             }
